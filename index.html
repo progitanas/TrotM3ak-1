@@ -1,0 +1,170 @@
+import React, { useState } from 'react';
+import { MapPin, Navigation, AlertTriangle, Info, Coffee, Menu, Clock, Sun, Moon, Shield, ChevronRight, Headphones, SkipBack, Pause, SkipForward } from 'lucide-react';
+
+const CasaScooterApp = () => {
+  const [activeTab, setActiveTab] = useState('map');
+  const [darkMode, setDarkMode] = useState(false);
+  const [safetyLevel, setSafetyLevel] = useState('high');
+  const [audioConnected, setAudioConnected] = useState(true);
+  
+  // Points d'intérêt fictifs à proximité
+  const nearbyPOIs = [
+    { id: 1, name: "Mosquée Hassan II", type: "monument", distance: "350m" },
+    { id: 2, name: "Café des Épices", type: "café", distance: "120m" },
+    { id: 3, name: "Ancienne Médina", type: "quartier", distance: "500m" }
+  ];
+  
+  // Données fictives pour la démonstration
+  const journeyData = {
+    currentLocation: "Quartier Gauthier",
+    destination: "Place Mohammed V",
+    estimatedTime: "12 min",
+    distance: "2.4 km",
+    safetyStatus: "Sécurité optimale"
+  };
+  
+  const getBgColor = () => darkMode ? 'bg-gray-900' : 'bg-gray-100';
+  const getTextColor = () => darkMode ? 'text-white' : 'text-gray-800';
+  const getSecondaryBg = () => darkMode ? 'bg-gray-800' : 'bg-white';
+  
+  return (
+    <div className={`h-screen flex flex-col ${getBgColor()} ${getTextColor()}`}>
+      {/* Header */}
+      <header className={`px-4 py-3 flex justify-between items-center ${getSecondaryBg()} shadow-md`}>
+        <div className="flex items-center">
+          <Menu className="mr-3" size={24} />
+          <h1 className="text-xl font-bold">CasaScooter</h1>
+        </div>
+        <div className="flex">
+          <button 
+            onClick={() => setDarkMode(!darkMode)} 
+            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+          <button className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+            <Shield size={20} color={safetyLevel === 'high' ? 'green' : safetyLevel === 'medium' ? 'orange' : 'red'} />
+          </button>
+          <button className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+            <Headphones size={20} color={audioConnected ? 'blue' : 'gray'} />
+          </button>
+        </div>
+      </header>
+      
+      {/* Main Content */}
+      <main className="flex-1 overflow-hidden">
+        {/* Map View Placeholder */}
+        <div className="relative h-full">
+          <div className={`absolute inset-0 flex items-center justify-center ${darkMode ? 'bg-gray-800' : 'bg-blue-50'}`}>
+            {/* Simplified map representation */}
+            <div className="relative w-full h-full">
+              <div className={`absolute inset-0 ${darkMode ? 'opacity-40' : 'opacity-80'}`} style={{
+                backgroundImage: "url('/api/placeholder/600/600')",
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}></div>
+              
+              {/* Journey Info Overlay */}
+              <div className={`absolute top-4 left-4 right-4 ${getSecondaryBg()} rounded-lg shadow-lg p-4`}>
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex items-center">
+                    <Navigation className="mr-2" size={18} />
+                    <span className="font-semibold">Navigation active</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Clock className="mr-1" size={16} />
+                    <span>{journeyData.estimatedTime}</span>
+                  </div>
+                </div>
+                
+                <div className="flex justify-between text-sm">
+                  <div>
+                    <p className="text-gray-500">De: {journeyData.currentLocation}</p>
+                    <p className="font-medium">À: {journeyData.destination}</p>
+                  </div>
+                  <div className="text-right">
+                    <p>{journeyData.distance}</p>
+                    <p className="text-green-600">{journeyData.safetyStatus}</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Audio Controls */}
+              <div className={`absolute bottom-24 left-4 right-4 ${getSecondaryBg()} rounded-lg shadow-lg p-3`}>
+                <div className="flex justify-between items-center">
+                  <div className="flex-1">
+                    <p className="font-medium text-sm truncate">Mosquée Hassan II</p>
+                    <p className="text-xs text-gray-500">Appuyez sur le bouton d'info pour plus de détails</p>
+                  </div>
+                  <div className="flex space-x-4">
+                    <SkipBack size={20} />
+                    <Pause size={20} />
+                    <SkipForward size={20} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      
+      {/* Points of Interest Panel */}
+      <div className={`${getSecondaryBg()} rounded-t-xl shadow-lg`}>
+        <div className="px-4 py-3 flex justify-between items-center border-b border-gray-200 dark:border-gray-700">
+          <h2 className="font-semibold">Points d'intérêt à proximité</h2>
+          <span className="text-xs text-blue-600">Voir tous</span>
+        </div>
+        <div className="max-h-40 overflow-y-auto">
+          {nearbyPOIs.map(poi => (
+            <div key={poi.id} className="px-4 py-3 flex justify-between items-center border-b border-gray-100 dark:border-gray-800">
+              <div className="flex items-center">
+                {poi.type === 'monument' && <MapPin size={18} className="mr-3 text-red-500" />}
+                {poi.type === 'café' && <Coffee size={18} className="mr-3 text-brown-500" />}
+                {poi.type === 'quartier' && <Info size={18} className="mr-3 text-blue-500" />}
+                <div>
+                  <p className="font-medium">{poi.name}</p>
+                  <p className="text-xs text-gray-500">{poi.type} • {poi.distance}</p>
+                </div>
+              </div>
+              <ChevronRight size={18} className="text-gray-400" />
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* Bottom Navigation */}
+      <nav className={`grid grid-cols-4 ${getSecondaryBg()} border-t border-gray-200 dark:border-gray-700`}>
+        <button 
+          className={`p-4 flex flex-col items-center ${activeTab === 'map' ? 'text-blue-600' : 'text-gray-500'}`}
+          onClick={() => setActiveTab('map')}
+        >
+          <Navigation size={20} />
+          <span className="text-xs mt-1">Carte</span>
+        </button>
+        <button 
+          className={`p-4 flex flex-col items-center ${activeTab === 'explore' ? 'text-blue-600' : 'text-gray-500'}`}
+          onClick={() => setActiveTab('explore')}
+        >
+          <MapPin size={20} />
+          <span className="text-xs mt-1">Explorer</span>
+        </button>
+        <button 
+          className={`p-4 flex flex-col items-center ${activeTab === 'safety' ? 'text-blue-600' : 'text-gray-500'}`}
+          onClick={() => setActiveTab('safety')}
+        >
+          <Shield size={20} />
+          <span className="text-xs mt-1">Sécurité</span>
+        </button>
+        <button 
+          className={`p-4 flex flex-col items-center ${activeTab === 'profile' ? 'text-blue-600' : 'text-gray-500'}`}
+          onClick={() => setActiveTab('profile')}
+        >
+          <Headphones size={20} />
+          <span className="text-xs mt-1">Audio</span>
+        </button>
+      </nav>
+    </div>
+  );
+};
+
+export default CasaSc
